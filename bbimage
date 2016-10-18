@@ -1,0 +1,55 @@
+#!/bin/bash
+# vim: shiftwidth=2
+#
+# Usage: bbimage [file(s)] [url(s)]
+set -euo pipefail
+
+if (( $# == 0 )); then
+
+  me=$(basename "$0")
+  printf "Usage: $me file...\n"
+  exit 1
+
+fi
+
+args="$@"
+
+# Sanity check(s)
+for path in $args; do
+
+  if [ -d "$path" ]; then
+    printf "I'm not able to process directories.\n"
+    exit 2
+  fi
+
+done
+
+dl_files=""
+remote_cnt=0
+for file in $args; do
+
+  # wget all images online, if any
+  if [ -n "$(echo "$file" | grep -E "http.?://")" ]; then
+
+    # Grab file extension from URL
+    ext=$(echo "$file" | sed 's/.*\.\([a-z]*\)$/\1/')
+
+    # Set temporary path...
+    tmp="/tmp/bbimage-$remote_cnt.$ext"
+    remote_cnt=$((remote_cnt++))
+
+    # ... and download
+    wget -q "$file" -O "$tmp"
+    dl_files="$dl_files $tmp"
+  fi
+done
+
+# concat all, now local, files; strip away urls and trim whitespace
+final="$(echo "$(echo "$args" | sed -r 's/http.?\:\/\/[^ ]*//g') $dl_files" | xargs)"
+
+for file in $final; do
+  img=$(echo "$(curl https://images.baconbits.org/upload.php -X POST -F "ImageUp=@$file" 2> /dev/null)" | sed 's/{"ImgName":"\(.*\)"}/\1/')
+  url="https://images.baconbits.org/images/$img"
+  printf "[img=$url]\n"
+done
+

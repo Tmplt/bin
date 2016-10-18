@@ -1,0 +1,43 @@
+#!/bin/bash
+
+clear
+echo && echo
+toilet -f sblood --metal "   updates"
+echo && echo
+pacaur -Su
+echo && echo 
+read -p "Press [Enter]"
+
+continuedevel ()
+{
+    clear
+    echo && echo
+    toilet -f sblood --gay "   devpkgs"
+    echo && echo
+    pacaur --noconfirm --needed --update --devel
+    echo && echo
+    read -p "Press [Enter]"
+    exit
+}
+
+rundevel ()
+{
+    clear
+    echo && echo
+    toilet -f sblood --metal "   devpkgs"
+    echo & echo
+    pacaur --check --devel
+    echo
+    local yn
+    read -p "Do you wish to upgrade git/devel packages? " yn
+    case $yn in
+        [Yy]* ) continuedevel;;
+        [Nn]* ) exit;;
+        * ) echo "Please answer yes or no. ";;
+    esac
+}
+clear
+rundevel
+echo $yn
+
+

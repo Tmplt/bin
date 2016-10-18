@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+tmpbg="/tmp/screen.png"
+
+maim "$tmpbg"
+convert "$tmpbg" -scale 10% -scale 1000% "$tmpbg" # pixelize it
+
+steamstatus=$(pidof -s steam)
+if [ -n "$steamstatus" ]; then
+    steam steam://friends/status/away
+fi
+
+xset s default
+mpc pause
+
+i3lock -e -u -n -i "$tmpbg"
+
+if [ -n "$steamstatus" ]; then
+    steam steam://friends/status/online
+fi
+
+xset s 7200 7200

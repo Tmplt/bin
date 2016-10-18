@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# --
+# Get Pacman Updates Output for lemonbuddy
+# --
+
+upd='pkgs: '
+upd+=$(pacman -Qu | wc -l)
+echo $upd

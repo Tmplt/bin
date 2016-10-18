@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+# A simple command that wraps bc
+bc <<< "$*"
